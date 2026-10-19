@@ -1,0 +1,38 @@
+# Builds the Recipe Book Android app (recipe-book.apk) after every upload, and posts it on this repository's
+# Releases page. The newest one is always at:
+#   https://github.com/YOUR-NAME/YOUR-REPOSITORY/releases/latest/download/recipe-book.apk
+# To run it, this file has to sit at .github/workflows/build-app.yml (see the README). The steps themselves are in
+# android-build.sh, so later versions of the app don't need this file changed.
+name: Build the Android app
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-app
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Build the app and post it under Releases
+        env:
+          APP_SIGNING_KEY: ${{ secrets.APP_SIGNING_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: bash android-build.sh
