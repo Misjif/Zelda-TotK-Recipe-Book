@@ -1,7 +1,7 @@
-// Recipe Book offline helper (version 2026-10-19-2b3bc96246).
+// Recipe Book offline helper (version 2026-10-20-7c46cd82b3).
 // Keeps a copy of the app on the phone. The page itself comes fresh from GitHub when the phone is online (so an
 // upload shows up the next time you open the app) and from the saved copy when it isn't.
-const CACHE = 'totk-book-2026-10-19-2b3bc96246';
+const CACHE = 'totk-book-2026-10-20-7c46cd82b3';
 const FILES = ["./","index.html","manifest.webmanifest","icon-192.png","icon-512.png","icon-maskable-512.png","marcellus-latin-400-normal.woff2","cinzel-latin-600-normal.woff2","cinzel-latin-700-normal.woff2","cinzel-latin-800-normal.woff2","nunito-latin-400-normal.woff2","nunito-latin-600-normal.woff2","nunito-latin-700-normal.woff2","nunito-latin-800-normal.woff2","nunito-latin-900-normal.woff2","map-surface-b703cdc2.webp","map-depths-810e5383.webp"];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

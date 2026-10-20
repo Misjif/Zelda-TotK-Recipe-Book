@@ -15,7 +15,7 @@ Cooking, fusing, building and a painted map of Hyrule, worked out from your own 
 
 1. **Add your signing key.** In the repository, open **Settings**, then **Secrets and variables**, then **Actions**, and tap **New repository secret**. Name: `APP_SIGNING_KEY`. Secret: the whole text of `recipe-book-signing-key.txt` (sent to you separately; it is not in this folder). Tap **Add secret**.
    Keep that key file somewhere safe, such as your Google Drive. Every update of the app has to be signed with the same key; without it, the phone can only take a new version after uninstalling the old one.
-2. **Switch the build on.** Open `build-app.yml` in the repository, tap the pencil (**Edit**), and change its name to `.github/workflows/build-app.yml` (typing each **/** makes a folder). Tap **Commit changes**.
+2. **Switch the build on.** On the repository's **Code** tab, tap **Add file**, then **Create new file**. Name it exactly `.github/workflows/build-app.yml` (typing each **/** makes a folder), paste in the text from **The build file** at the end of this README, and tap **Commit changes** (commit directly to the main branch).
 3. Tap **Actions**. **Build the Android app** is running; it takes about 5 minutes. A green tick means the app is ready.
    A red cross: tap it to see why. If it says the key is missing, add it (step 1), then tap **Re-run all jobs**.
 
@@ -32,7 +32,7 @@ Each copy of the app keeps its own bag. In the copy that has your bag (for examp
 
 ## Updating later
 
-Upload the new files over the old ones (same names) and commit. GitHub builds the new app by itself; about 5 minutes later, open the same download link and install it over the old app. Your bag stays.
+Unzip the new download, then in the repository tap **Add file**, **Upload files**, select all the files, and commit (directly to the main branch). Files with the same names replace the old ones. GitHub builds the new app by itself; about 5 minutes later, open the same download link and install it over the old app. Your bag stays. (The build file in `.github/workflows` stays as it is; it isn't in the download.)
 
 ## Good to know
 
@@ -44,3 +44,48 @@ Upload the new files over the old ones (same names) and commit. GitHub builds th
 - The phone's Back gesture steps back inside an open popup, then closes it; with no popup open it leaves the app as usual.
 - The fonts (Cinzel, Nunito and Marcellus) are under the SIL Open Font License; see `OFL.txt`. All drawings and the painted map are the app's own.
 - Fan-made reference, not affiliated with Nintendo.
+
+## The build file
+
+Only needed once, for step 2: the text of `.github/workflows/build-app.yml`. Copy everything between the lines.
+
+```yaml
+# Builds the Recipe Book Android app (recipe-book.apk) after every upload, and posts it on this repository's
+# Releases page. The newest one is always at:
+#   https://github.com/YOUR-NAME/YOUR-REPOSITORY/releases/latest/download/recipe-book.apk
+# To run it, this file has to sit at .github/workflows/build-app.yml (see the README). The steps themselves are in
+# android-build.sh, so later versions of the app don't need this file changed.
+name: Build the Android app
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-app
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Build the app and post it under Releases
+        env:
+          APP_SIGNING_KEY: ${{ secrets.APP_SIGNING_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: bash android-build.sh
+```
