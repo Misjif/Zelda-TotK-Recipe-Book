@@ -3,7 +3,7 @@
 #   https://github.com/YOUR-NAME/YOUR-REPOSITORY/releases/latest/download/recipe-book.apk
 # To run it, this file has to sit at .github/workflows/build-app.yml (see the README). The steps themselves are in
 # android-build.sh, so later versions of the app don't need this file changed.
-name: .github/workflows/build-app.yml
+name: Build the Android app
 
 on:
   push:
